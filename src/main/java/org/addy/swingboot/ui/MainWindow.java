@@ -24,6 +24,8 @@ import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.text.html.HTMLEditorKit;
 import java.awt.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
@@ -124,7 +126,7 @@ public class MainWindow extends JFrame {
                 new ColumnSpec(ColumnType.NUMBER, "Year", 60, "###0"),
                 new ColumnSpec(ColumnType.TEXT, "Language", 80),
                 new ColumnSpec(ColumnType.NUMBER, "Length", 60, CellFormat.DEFAULT, CellFormat.LINE_END, "##0 'min'"),
-                new ColumnSpec(ColumnType.NUMBER, "Replacement", 80, CellFormat.DEFAULT, CellFormat.LINE_END, "##0.00'$'"),
+                new ColumnSpec(ColumnType.NUMBER, "Replacement", 80, CellFormat.DEFAULT, CellFormat.LINE_END, "##0.00 '$'"),
                 new ColumnSpec(ColumnType.TEXT, "Rating", 60),
                 new ColumnSpec(ColumnType.TEXT, "Special features", 300));
         filmTable.getSelectionModel().addListSelectionListener(this::filmSelected);
@@ -137,6 +139,13 @@ public class MainWindow extends JFrame {
 
         posterBox = new JPictureBox(null, SizeMode.CONTAIN);
         posterBox.setPreferredSize(SIDE_WIDGET_SIZE);
+        posterBox.setToolTipText("Double-click the image to display in full size");
+        posterBox.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                posterClicked(e);
+            }
+        });
         posterPane.add(posterBox, BorderLayout.CENTER);
 
         var descriptionPane = createFramePanel("Description");
@@ -195,5 +204,24 @@ public class MainWindow extends JFrame {
             descriptionArea.setText(wrapHtml(selectedFilm.getDescription()));
             actorListModel.setItems(actorRepository.findByFilm(selectedFilm));
         }
+    }
+
+    private void posterClicked(MouseEvent e) {
+        if (e.getButton() != MouseEvent.BUTTON1 || e.getClickCount() != 2 || posterBox.getImage() == null)
+            return;
+
+        var pictureBox = new JPictureBox(posterBox.getImage(), SizeMode.AUTO);
+        pictureBox.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
+
+        int filmIndex = filmTable.convertRowIndexToModel(filmTable.getSelectedRow());
+        var selectedFilm = (Film) filmTableModel.getRowAt(filmIndex);
+
+        var dialog = new JDialog(this);
+        dialog.setContentPane(new JScrollPane(pictureBox));
+        dialog.setTitle(String.format("%s - Movie Poster", selectedFilm.getTitle()));
+        dialog.setSize(1055, 900);
+        dialog.setLocationRelativeTo(this);
+        dialog.setModal(true);
+        dialog.setVisible(true);
     }
 }
