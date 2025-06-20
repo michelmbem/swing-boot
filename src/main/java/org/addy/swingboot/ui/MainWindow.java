@@ -3,38 +3,52 @@ package org.addy.swingboot.ui;
 import lombok.extern.slf4j.Slf4j;
 import org.addy.simpletable.SimpleTable;
 import org.addy.simpletable.SimpleTableModel;
+import org.addy.simpletable.column.spec.CellFormat;
 import org.addy.simpletable.column.spec.ColumnSpec;
 import org.addy.simpletable.column.spec.ColumnType;
+import org.addy.swing.JPictureBox;
 import org.addy.swing.SimpleComboBoxModel;
+import org.addy.swing.SizeMode;
 import org.addy.swingboot.model.Actor;
 import org.addy.swingboot.model.Category;
 import org.addy.swingboot.model.Film;
+import org.addy.swingboot.model.FilmPoster;
 import org.addy.swingboot.repository.ActorRepository;
 import org.addy.swingboot.repository.CategoryRepository;
 import org.addy.swingboot.repository.FilmRepository;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.text.html.HTMLEditorKit;
 import java.awt.*;
+import java.io.File;
+import java.io.IOException;
 import java.util.List;
 
 @Slf4j
 @Component
 public class MainWindow extends JFrame {
+    public static final Dimension SIDE_WIDGET_SIZE = new Dimension(200, 0);
+
     private final CategoryRepository categoryRepository;
     private final FilmRepository filmRepository;
     private final ActorRepository actorRepository;
 
     private JList<Category> categoryList;
     private SimpleTable filmTable;
-    private SimpleTable actorTable;
+    private JPictureBox posterBox;
     private JEditorPane descriptionArea;
+    private JList<Actor> actorList;
 
     private SimpleComboBoxModel<Category> categoryListModel;
     private SimpleTableModel filmTableModel;
-    private SimpleTableModel actorTableModel;
+    private SimpleComboBoxModel<Actor> actorListModel;
+
+    @Value("${images.basedir}")
+    private String imageBaseDir;
 
     public MainWindow(
             CategoryRepository categoryRepository,
@@ -65,6 +79,19 @@ public class MainWindow extends JFrame {
         return panel;
     }
 
+    private static Image loadImage(String baseDir, FilmPoster poster) {
+        if (poster == null) return null;
+
+        var imageFile = new File(baseDir, poster.getFilename());
+
+        try {
+            return ImageIO.read(imageFile);
+        } catch (IOException e) {
+            log.error("Could not load image '{}'", imageFile.getPath(), e);
+            return null;
+        }
+    }
+
     private static String wrapHtml(String text) {
         return String.format("<html><font face='sans-serif' size='4'>%s</font></html>", text);
     }
@@ -72,11 +99,10 @@ public class MainWindow extends JFrame {
     private void initModels() {
         categoryListModel = new SimpleComboBoxModel<>();
 
-        filmTableModel = new SimpleTableModel(Film.class, "title", "releaseYear", "language", "length", "rating", "specialFeatures");
+        filmTableModel = new SimpleTableModel(Film.class, "title", "releaseYear", "language", "length", "replacementCost", "rating", "specialFeatures");
         filmTableModel.setEditable(false);
 
-        actorTableModel = new SimpleTableModel(Actor.class, "firstName", "lastName");
-        actorTableModel.setEditable(false);
+        actorListModel = new SimpleComboBoxModel<>();
     }
 
     private void initUI() {
@@ -95,15 +121,23 @@ public class MainWindow extends JFrame {
         filmTable = new SimpleTable(filmTableModel);
         filmTable.setColumnSpecs(
                 new ColumnSpec(ColumnType.TEXT, "Title", 200),
-                new ColumnSpec(ColumnType.NUMBER, "Year", 75),
-                new ColumnSpec(ColumnType.TEXT, "Language", 125),
-                new ColumnSpec(ColumnType.NUMBER, "Length", 75),
-                new ColumnSpec(ColumnType.TEXT, "Rating", 75),
-                new ColumnSpec(ColumnType.TEXT, "Special Features", 300));
+                new ColumnSpec(ColumnType.NUMBER, "Year", 60, "###0"),
+                new ColumnSpec(ColumnType.TEXT, "Language", 80),
+                new ColumnSpec(ColumnType.NUMBER, "Length", 60, CellFormat.DEFAULT, CellFormat.LINE_END, "##0 'min'"),
+                new ColumnSpec(ColumnType.NUMBER, "Replacement", 80, CellFormat.DEFAULT, CellFormat.LINE_END, "##0.00'$'"),
+                new ColumnSpec(ColumnType.TEXT, "Rating", 60),
+                new ColumnSpec(ColumnType.TEXT, "Special features", 300));
         filmTable.getSelectionModel().addListSelectionListener(this::filmSelected);
         filmPane.add(new JScrollPane(filmTable), BorderLayout.CENTER);
 
         var filmInfoPane = new JPanel(new BorderLayout());
+
+        var posterPane = createFramePanel("Poster");
+        filmInfoPane.add(posterPane, BorderLayout.LINE_START);
+
+        posterBox = new JPictureBox(null, SizeMode.CONTAIN);
+        posterBox.setPreferredSize(SIDE_WIDGET_SIZE);
+        posterPane.add(posterBox, BorderLayout.CENTER);
 
         var descriptionPane = createFramePanel("Description");
         filmInfoPane.add(descriptionPane, BorderLayout.CENTER);
@@ -111,16 +145,14 @@ public class MainWindow extends JFrame {
         descriptionArea = new JEditorPane();
         descriptionArea.setEditorKit(new HTMLEditorKit());
         descriptionArea.setEditable(false);
-        descriptionPane.add(new JScrollPane(descriptionArea));
+        descriptionPane.add(new JScrollPane(descriptionArea), BorderLayout.CENTER);
 
         var actorPane = createFramePanel("Actors");
         filmInfoPane.add(actorPane, BorderLayout.LINE_END);
 
-        actorTable = new SimpleTable(actorTableModel);
-        actorTable.setColumnSpecs(
-                new ColumnSpec(ColumnType.TEXT, "First Name", 200),
-                new ColumnSpec(ColumnType.TEXT, "Last Name", 200));
-        actorPane.add(new JScrollPane(actorTable), BorderLayout.CENTER);
+        actorList = new JList<>(actorListModel);
+        actorList.setPreferredSize(SIDE_WIDGET_SIZE);
+        actorPane.add(new JScrollPane(actorList), BorderLayout.CENTER);
 
         var detailPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, filmPane, filmInfoPane);
         detailPane.setDividerLocation(450);
@@ -145,21 +177,23 @@ public class MainWindow extends JFrame {
         Category selectedCategory = categoryList.getSelectedValue();
         List<Film> categoryFilms = filmRepository.findByCategory(selectedCategory);
         filmTableModel.setItemSource(categoryFilms);
-        actorTableModel.setItemSource(List.of());
+        filmSelected(null);
     }
 
     private void filmSelected(ListSelectionEvent e) {
         int filmIndex = filmTable.getSelectedRow();
 
         if (filmIndex < 0) {
+            posterBox.setImage(null);
             descriptionArea.setText("");
-            actorTableModel.setItemSource(List.of());
-        }
-        else {
+            actorListModel.setItems(List.of());
+        } else {
             filmIndex = filmTable.convertRowIndexToModel(filmIndex);
             var selectedFilm = (Film) filmTableModel.getRowAt(filmIndex);
+            posterBox.setImage(loadImage(imageBaseDir, selectedFilm.getPoster()));
+            posterBox.getParent().doLayout();
             descriptionArea.setText(wrapHtml(selectedFilm.getDescription()));
-            actorTableModel.setItemSource(actorRepository.findByFilm(selectedFilm));
+            actorListModel.setItems(actorRepository.findByFilm(selectedFilm));
         }
     }
 }

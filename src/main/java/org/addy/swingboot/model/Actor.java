@@ -66,10 +66,6 @@ public class Actor {
 
     @Override
     public String toString() {
-        return new StringJoiner(", ", Actor.class.getSimpleName() + "[", "]")
-                .add("id=" + id)
-                .add("firstName='" + firstName + "'")
-                .add("lastName='" + lastName + "'")
-                .toString();
+        return String.format("%s %s", firstName, lastName).strip();
     }
 }

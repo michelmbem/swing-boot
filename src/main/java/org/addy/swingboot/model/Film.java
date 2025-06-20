@@ -68,6 +68,9 @@ public class Film {
     @Column(name = "last_update")
     private LocalDateTime lastUpdate;
 
+    @OneToOne(mappedBy = "film", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    FilmPoster poster;
+
     @ManyToMany
     @JoinTable(
             name = "film_category",

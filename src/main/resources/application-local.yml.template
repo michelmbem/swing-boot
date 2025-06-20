@@ -2,3 +2,6 @@ spring:
   datasource:
     username: MYSQL_USER
     password: MYSQL_PASSWORD
+
+images:
+  basedir: PATH_TO_THE_FOLDER_WHERE_IMAGES_ARE_STORED
