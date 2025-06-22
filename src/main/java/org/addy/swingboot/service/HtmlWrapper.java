@@ -6,8 +6,8 @@ import org.springframework.stereotype.Service;
 @Service
 @Slf4j
 public class HtmlWrapper {
-    public static final String PREFIX = "<html><font face='sans-serif' size='4'>";
-    public static final String SUFFIX = "</font></html>";
+    public static final String PREFIX = "<font face='sans-serif' size='4'>";
+    public static final String SUFFIX = "</font>";
 
     public String wrap(String text) {
         return PREFIX + text + SUFFIX;

@@ -40,4 +40,21 @@ public class WidgetFactory {
 
         return dialog;
     }
+
+    @SuppressWarnings("unchecked")
+    public <T> ListCellRenderer<T> createListCellRenderer() {
+        return (ListCellRenderer<T>) new DefaultListCellRenderer() {
+            @Override
+            public Component getListCellRendererComponent(JList<?> list, Object value, int index,
+                                                           boolean isSelected, boolean cellHasFocus) {
+                var component = (JComponent) super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+                component.setBorder(BorderFactory.createCompoundBorder(
+                        component.getBorder(),
+                        BorderFactory.createEmptyBorder(1, 2, 1, 2)
+                ));
+
+                return component;
+            }
+        };
+    }
 }

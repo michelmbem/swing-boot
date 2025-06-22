@@ -77,6 +77,7 @@ public class MainWindow extends JFrame {
 
         categoryList = new JList<>(categoryListModel);
         categoryList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        categoryList.setCellRenderer(widgetFactory.createListCellRenderer());
         categoryList.addListSelectionListener(this::categorySelected);
         categoryPane.add(new JScrollPane(categoryList), BorderLayout.CENTER);
 
@@ -117,6 +118,7 @@ public class MainWindow extends JFrame {
         descriptionArea = new JEditorPane();
         descriptionArea.setEditorKit(new HTMLEditorKit());
         descriptionArea.setEditable(false);
+        descriptionArea.setBorder(BorderFactory.createEmptyBorder(2, 2, 2, 2));
         descriptionPane.add(new JScrollPane(descriptionArea), BorderLayout.CENTER);
 
         var actorPane = widgetFactory.createFramePanel("Actors");
@@ -124,6 +126,7 @@ public class MainWindow extends JFrame {
 
         actorList = new JList<>(actorListModel);
         actorList.setPreferredSize(SIDE_WIDGET_SIZE);
+        actorList.setCellRenderer(widgetFactory.createListCellRenderer());
         actorPane.add(new JScrollPane(actorList), BorderLayout.CENTER);
 
         var detailPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, filmPane, filmInfoPane);
