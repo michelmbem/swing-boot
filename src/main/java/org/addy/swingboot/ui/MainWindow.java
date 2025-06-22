@@ -11,6 +11,7 @@ import org.addy.simpletable.column.spec.ColumnType;
 import org.addy.swing.JPictureBox;
 import org.addy.swing.SimpleComboBoxModel;
 import org.addy.swing.SizeMode;
+import org.addy.swing.UIHelper;
 import org.addy.swingboot.model.Actor;
 import org.addy.swingboot.model.Category;
 import org.addy.swingboot.model.Film;
@@ -18,16 +19,16 @@ import org.addy.swingboot.repository.ActorRepository;
 import org.addy.swingboot.repository.CategoryRepository;
 import org.addy.swingboot.repository.FilmRepository;
 import org.addy.swingboot.service.HtmlWrapper;
-import org.addy.swingboot.service.ImageLoader;
 import org.addy.swingboot.service.WidgetFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.text.html.HTMLEditorKit;
 import java.awt.*;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
+import java.awt.event.ActionEvent;
+import java.io.File;
 import java.util.List;
 
 @Component
@@ -40,7 +41,6 @@ public class MainWindow extends JFrame {
     private final FilmRepository filmRepository;
     private final ActorRepository actorRepository;
     private final WidgetFactory widgetFactory;
-    private final ImageLoader imageLoader;
     private final HtmlWrapper htmlWrapper;
 
     private JList<Category> categoryList;
@@ -52,6 +52,9 @@ public class MainWindow extends JFrame {
     private SimpleComboBoxModel<Category> categoryListModel;
     private SimpleTableModel filmTableModel;
     private SimpleComboBoxModel<Actor> actorListModel;
+
+    @Value("${images.basedir}")
+    private String imageBaseDir;
 
     @PostConstruct
     private void initialize() {
@@ -104,12 +107,7 @@ public class MainWindow extends JFrame {
         posterBox = new JPictureBox(null, SizeMode.CONTAIN);
         posterBox.setPreferredSize(SIDE_WIDGET_SIZE);
         posterBox.setToolTipText("Double-click the image to display in full size");
-        posterBox.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                posterClicked(e);
-            }
-        });
+        UIHelper.addDoubleClickListener(posterBox, this::posterDoubleClicked);
         posterPane.add(posterBox, BorderLayout.CENTER);
 
         var descriptionPane = widgetFactory.createFramePanel("Description");
@@ -159,22 +157,21 @@ public class MainWindow extends JFrame {
         int filmIndex = filmTable.getSelectedRow();
 
         if (filmIndex < 0) {
-            posterBox.setImage(null);
+            posterBox.setImageSource(null);
             descriptionArea.setText("");
             actorListModel.setItems(List.of());
         } else {
             filmIndex = filmTable.convertRowIndexToModel(filmIndex);
             var selectedFilm = (Film) filmTableModel.getRowAt(filmIndex);
-            posterBox.setImage(imageLoader.loadImage(selectedFilm.getPoster()));
+            posterBox.setImageSource(new File(imageBaseDir, selectedFilm.getPoster().getFilename()));
             posterBox.getParent().doLayout();
             descriptionArea.setText(htmlWrapper.wrap(selectedFilm.getDescription()));
             actorListModel.setItems(actorRepository.findByFilm(selectedFilm));
         }
     }
 
-    private void posterClicked(MouseEvent e) {
-        if (e.getButton() != MouseEvent.BUTTON1 || e.getClickCount() != 2 || posterBox.getImage() == null)
-            return;
+    private void posterDoubleClicked(ActionEvent e) {
+        if (posterBox.getImage() == null) return;
 
         int filmIndex = filmTable.convertRowIndexToModel(filmTable.getSelectedRow());
         var selectedFilm = (Film) filmTableModel.getRowAt(filmIndex);
