@@ -34,7 +34,7 @@ public class WidgetFactory {
         var dialog = new JDialog(owner);
         dialog.setContentPane(new JScrollPane(pictureBox));
         dialog.setTitle(title);
-        dialog.setSize(1055, 900);
+        dialog.setSize(520, 800);
         dialog.setLocationRelativeTo(owner);
         dialog.setModal(true);
 

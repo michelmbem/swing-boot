@@ -4,4 +4,4 @@ spring:
     password: MYSQL_PASSWORD
 
 images:
-  basedir: PATH_TO_THE_FOLDER_WHERE_IMAGES_ARE_STORED
+  basedir: /PATH/TO/THE/FOLDER/WHERE/IMAGES/ARE/STORED/

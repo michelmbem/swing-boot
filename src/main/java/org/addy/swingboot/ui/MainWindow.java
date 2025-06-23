@@ -28,7 +28,6 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.text.html.HTMLEditorKit;
 import java.awt.*;
 import java.awt.event.ActionEvent;
-import java.io.File;
 import java.util.List;
 
 @Component
@@ -163,7 +162,7 @@ public class MainWindow extends JFrame {
         } else {
             filmIndex = filmTable.convertRowIndexToModel(filmIndex);
             var selectedFilm = (Film) filmTableModel.getRowAt(filmIndex);
-            posterBox.setImageSource(new File(imageBaseDir, selectedFilm.getPoster().getFilename()));
+            posterBox.setImageSource(imageBaseDir + selectedFilm.getPoster().getFilename());
             posterBox.getParent().doLayout();
             descriptionArea.setText(htmlWrapper.wrap(selectedFilm.getDescription()));
             actorListModel.setItems(actorRepository.findByFilm(selectedFilm));
