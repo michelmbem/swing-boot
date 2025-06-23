@@ -12,6 +12,7 @@ import org.addy.swing.JPictureBox;
 import org.addy.swing.SimpleComboBoxModel;
 import org.addy.swing.SizeMode;
 import org.addy.swing.UIHelper;
+import org.addy.swingboot.converter.FilmLengthConverter;
 import org.addy.swingboot.model.Actor;
 import org.addy.swingboot.model.Category;
 import org.addy.swingboot.model.Film;
@@ -66,6 +67,7 @@ public class MainWindow extends JFrame {
         categoryListModel = new SimpleComboBoxModel<>();
 
         filmTableModel = new SimpleTableModel(Film.class, "title", "releaseYear", "language", "length", "replacementCost", "rating", "specialFeatures");
+        filmTableModel.getColumns()[3].setConverter(new FilmLengthConverter());
         filmTableModel.setEditable(false);
 
         actorListModel = new SimpleComboBoxModel<>();
@@ -88,12 +90,12 @@ public class MainWindow extends JFrame {
         filmTable = new SimpleTable(filmTableModel);
         filmTable.setColumnSpecs(
                 new ColumnSpec(ColumnType.TEXT, "Title", 200),
-                new ColumnSpec(ColumnType.NUMBER, "Year", 60, "###0"),
-                new ColumnSpec(ColumnType.TEXT, "Language", 80),
-                new ColumnSpec(ColumnType.NUMBER, "Length", 60, CellFormat.DEFAULT, CellFormat.LINE_END, "##0 'min'"),
-                new ColumnSpec(ColumnType.NUMBER, "Replacement", 80, CellFormat.DEFAULT, CellFormat.LINE_END, "##0.00 '$'"),
-                new ColumnSpec(ColumnType.TEXT, "Rating", 60),
-                new ColumnSpec(ColumnType.TEXT, "Special features", 300));
+                new ColumnSpec(ColumnType.NUMBER, "Year", 50, "###0"),
+                new ColumnSpec(ColumnType.TEXT, "Language", 75),
+                new ColumnSpec(ColumnType.TEXT, "Length", 75, CellFormat.DEFAULT, CellFormat.LINE_END),
+                new ColumnSpec(ColumnType.NUMBER, "Replacement", 75, CellFormat.DEFAULT, CellFormat.LINE_END, "##0.00 '$'"),
+                new ColumnSpec(ColumnType.TEXT, "Rating", 75),
+                new ColumnSpec(ColumnType.TEXT, "Special features", 400));
         filmTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         filmTable.getSelectionModel().addListSelectionListener(this::filmSelected);
         filmPane.add(new JScrollPane(filmTable), BorderLayout.CENTER);
