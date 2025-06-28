@@ -12,7 +12,6 @@ import org.addy.swing.JPictureBox;
 import org.addy.swing.SimpleComboBoxModel;
 import org.addy.swing.SizeMode;
 import org.addy.swing.UIHelper;
-import org.addy.swingboot.converter.FilmLengthConverter;
 import org.addy.swingboot.model.Actor;
 import org.addy.swingboot.model.Category;
 import org.addy.swingboot.model.Film;
@@ -67,7 +66,6 @@ public class MainWindow extends JFrame {
         categoryListModel = new SimpleComboBoxModel<>();
 
         filmTableModel = new SimpleTableModel(Film.class, "title", "releaseYear", "language", "length", "replacementCost", "rating", "specialFeatures");
-        filmTableModel.getColumns()[3].setConverter(new FilmLengthConverter());
         filmTableModel.setEditable(false);
 
         actorListModel = new SimpleComboBoxModel<>();

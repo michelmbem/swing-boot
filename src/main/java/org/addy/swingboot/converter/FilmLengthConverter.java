@@ -1,25 +1,18 @@
 package org.addy.swingboot.converter;
 
-import org.addy.simpletable.column.converter.CellConverter;
+import jakarta.persistence.AttributeConverter;
+import jakarta.persistence.Converter;
+import org.addy.swingboot.model.FilmLength;
 
-public class FilmLengthConverter implements CellConverter {
+@Converter(autoApply = true)
+public class FilmLengthConverter implements AttributeConverter<FilmLength, Integer> {
     @Override
-    public Object model2view(Object modelValue, Object rowItem) {
-        if (modelValue == null) return "";
+    public Integer convertToDatabaseColumn(FilmLength attribute) {
+        return attribute != null ? attribute.minutes() : null;
+    }
 
-        var length = (int) modelValue;
-        var sb = new StringBuilder();
-        boolean hasHours = false;
-
-        if (length >= 60) {
-            hasHours = true;
-            sb.append(length / 60).append(" h");
-            length %= 60;
-        }
-
-        if (hasHours) sb.append(' ');
-        sb.append(String.format("%02d", length)).append(" min");
-
-        return sb.toString();
+    @Override
+    public FilmLength convertToEntityAttribute(Integer dbData) {
+        return dbData != null ? new FilmLength(dbData) : null;
     }
 }

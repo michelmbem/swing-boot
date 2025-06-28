@@ -54,7 +54,7 @@ public class Film {
     @Column(name = "rental_rate")
     private float rentalRate;
 
-    private Integer length;
+    private FilmLength length;
 
     @Column(name = "replacement_cost", nullable = false)
     private BigDecimal replacementCost;
