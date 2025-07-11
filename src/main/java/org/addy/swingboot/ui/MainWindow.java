@@ -21,6 +21,7 @@ import org.addy.swingboot.repository.FilmRepository;
 import org.addy.swingboot.service.HtmlWrapper;
 import org.addy.swingboot.service.WidgetFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import javax.swing.*;
@@ -31,6 +32,7 @@ import java.awt.event.ActionEvent;
 import java.util.List;
 
 @Component
+@Scope("prototype")
 @RequiredArgsConstructor
 @Slf4j
 public class MainWindow extends JFrame {
@@ -78,8 +80,8 @@ public class MainWindow extends JFrame {
         contentPane.add(categoryPane, BorderLayout.LINE_START);
 
         categoryList = new JList<>(categoryListModel);
-        categoryList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         categoryList.setCellRenderer(widgetFactory.createListCellRenderer());
+        categoryList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         categoryList.addListSelectionListener(this::categorySelected);
         categoryPane.add(new JScrollPane(categoryList), BorderLayout.CENTER);
 
