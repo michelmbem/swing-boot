@@ -93,7 +93,7 @@ public class MainWindow extends JFrame {
                 new ColumnSpec(ColumnType.NUMBER, "Year", 50, "###0"),
                 new ColumnSpec(ColumnType.TEXT, "Language", 75),
                 new ColumnSpec(ColumnType.TEXT, "Length", 75, CellFormat.DEFAULT, CellFormat.LINE_END),
-                new ColumnSpec(ColumnType.NUMBER, "Replacement", 75, CellFormat.DEFAULT, CellFormat.LINE_END, "##0.00 '$'"),
+                new ColumnSpec(ColumnType.NUMBER, "Price", 75, CellFormat.DEFAULT, CellFormat.LINE_END, "##0.00 '$'"),
                 new ColumnSpec(ColumnType.TEXT, "Rating", 75),
                 new ColumnSpec(ColumnType.TEXT, "Special features", 400));
         filmTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
@@ -117,7 +117,7 @@ public class MainWindow extends JFrame {
         descriptionArea = new JEditorPane();
         descriptionArea.setEditorKit(new HTMLEditorKit());
         descriptionArea.setEditable(false);
-        descriptionArea.setBorder(BorderFactory.createEmptyBorder(2, 2, 2, 2));
+        descriptionArea.setBorder(WidgetFactory.MARGIN);
         descriptionPane.add(new JScrollPane(descriptionArea), BorderLayout.CENTER);
 
         var actorPane = widgetFactory.createFramePanel("Actors");

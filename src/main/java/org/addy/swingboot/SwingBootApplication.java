@@ -1,5 +1,6 @@
 package org.addy.swingboot;
 
+import com.github.weisj.darklaf.LafManager;
 import lombok.extern.slf4j.Slf4j;
 import org.addy.swingboot.ui.MainWindow;
 import org.springframework.boot.WebApplicationType;
@@ -7,7 +8,6 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.context.ConfigurableApplicationContext;
 
-import javax.swing.*;
 import java.awt.*;
 
 @Slf4j
@@ -29,11 +29,7 @@ public class SwingBootApplication {
 				.web(WebApplicationType.NONE)
 				.run(args);
 
-		try {
-			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-		} catch (Exception e) {
-			log.warn("Could not initialize the look-and-feel: {}", e.getLocalizedMessage());
-		}
+		LafManager.install();
 
 		EventQueue.invokeLater(() -> {
 			var mainWindow = getBean(MainWindow.class);
