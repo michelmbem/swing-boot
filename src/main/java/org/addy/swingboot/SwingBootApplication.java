@@ -1,6 +1,7 @@
 package org.addy.swingboot;
 
 import com.github.weisj.darklaf.LafManager;
+import com.github.weisj.darklaf.theme.DarculaTheme;
 import lombok.extern.slf4j.Slf4j;
 import org.addy.swingboot.ui.MainWindow;
 import org.springframework.boot.WebApplicationType;
@@ -29,7 +30,7 @@ public class SwingBootApplication {
 				.web(WebApplicationType.NONE)
 				.run(args);
 
-		LafManager.install();
+		LafManager.install(new DarculaTheme());
 
 		EventQueue.invokeLater(() -> {
 			var mainWindow = getBean(MainWindow.class);

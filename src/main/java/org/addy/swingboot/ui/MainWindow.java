@@ -1,5 +1,7 @@
 package org.addy.swingboot.ui;
 
+import com.github.weisj.darklaf.LafManager;
+import com.github.weisj.darklaf.theme.DarculaTheme;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -8,10 +10,8 @@ import org.addy.simpletable.SimpleTableModel;
 import org.addy.simpletable.column.spec.CellFormat;
 import org.addy.simpletable.column.spec.ColumnSpec;
 import org.addy.simpletable.column.spec.ColumnType;
-import org.addy.swing.JPictureBox;
-import org.addy.swing.SimpleComboBoxModel;
-import org.addy.swing.SizeMode;
-import org.addy.swing.UIHelper;
+import org.addy.swing.*;
+import org.addy.swingboot.BeanScope;
 import org.addy.swingboot.model.Actor;
 import org.addy.swingboot.model.Category;
 import org.addy.swingboot.model.Film;
@@ -31,8 +31,10 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.util.List;
 
+import static org.addy.swing.UIHelper.loadIcon;
+
 @Component
-@Scope("prototype")
+@Scope(BeanScope.PROTOTYPE)
 @RequiredArgsConstructor
 @Slf4j
 public class MainWindow extends JFrame {
@@ -98,6 +100,10 @@ public class MainWindow extends JFrame {
                 new ColumnSpec(ColumnType.TEXT, "Special features", 400));
         filmTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         filmTable.getSelectionModel().addListSelectionListener(this::filmSelected);
+        if (LafManager.getTheme().appearsEqualTo(new DarculaTheme())) {
+            filmTable.setAlternateBackground(KnownColor.NAVY);
+            filmTable.setRolloverBackground(KnownColor.OLIVE);
+        }
         filmPane.add(new JScrollPane(filmTable), BorderLayout.CENTER);
 
         var filmInfoPane = new JPanel(new BorderLayout());
@@ -136,7 +142,7 @@ public class MainWindow extends JFrame {
         setContentPane(contentPane);
         setSize(1000, 700);
         setTitle("Spring-Boot and Swing Demo");
-        setIconImage(new ImageIcon(getClass().getClassLoader().getResource("spring-boot-logo.png")).getImage());
+        setIconImage(loadIcon(getClass().getClassLoader(), "spring-boot-logo.png", 0, 0).getImage());
         setLocationRelativeTo(null);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
     }
