@@ -11,10 +11,6 @@ import org.addy.swing.KnownColor;
 
 @UtilityClass
 public class ThemeHelper {
-    private static PreferredThemeStyle getPreferredThemeStyle() {
-        return LafManager.getPreferredThemeStyle();
-    }
-
     public Theme getSystemTheme() {
         return LafManager.themeForPreferredStyle(getPreferredThemeStyle());
     }
@@ -37,8 +33,12 @@ public class ThemeHelper {
 
     public void adjustSimpleTableColors(SimpleTable simpleTable) {
         if (isDarkTheme()) {
-            simpleTable.setAlternateBackground(KnownColor.NAVY);
+            simpleTable.setAlternateBackground(KnownColor.DARK_BLUE_GREY);
             simpleTable.setRolloverBackground(KnownColor.OLIVE);
         }
+    }
+
+    private PreferredThemeStyle getPreferredThemeStyle() {
+        return LafManager.getPreferredThemeStyle();
     }
 }
