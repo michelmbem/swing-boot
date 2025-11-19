@@ -1,7 +1,5 @@
 package org.addy.swingboot.ui;
 
-import com.github.weisj.darklaf.LafManager;
-import com.github.weisj.darklaf.theme.DarculaTheme;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -10,8 +8,10 @@ import org.addy.simpletable.SimpleTableModel;
 import org.addy.simpletable.column.spec.CellFormat;
 import org.addy.simpletable.column.spec.ColumnSpec;
 import org.addy.simpletable.column.spec.ColumnType;
-import org.addy.swing.*;
-import org.addy.swingboot.BeanScope;
+import org.addy.swing.JPictureBox;
+import org.addy.swing.SimpleComboBoxModel;
+import org.addy.swing.SizeMode;
+import org.addy.swing.UIHelper;
 import org.addy.swingboot.model.Actor;
 import org.addy.swingboot.model.Category;
 import org.addy.swingboot.model.Film;
@@ -20,6 +20,7 @@ import org.addy.swingboot.repository.CategoryRepository;
 import org.addy.swingboot.repository.FilmRepository;
 import org.addy.swingboot.service.HtmlWrapper;
 import org.addy.swingboot.service.WidgetFactory;
+import org.addy.swingboot.util.BeanScope;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -100,10 +101,7 @@ public class MainWindow extends JFrame {
                 new ColumnSpec(ColumnType.TEXT, "Special features", 400));
         filmTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         filmTable.getSelectionModel().addListSelectionListener(this::filmSelected);
-        if (LafManager.getTheme().appearsEqualTo(new DarculaTheme())) {
-            filmTable.setAlternateBackground(KnownColor.NAVY);
-            filmTable.setRolloverBackground(KnownColor.OLIVE);
-        }
+        ThemeHelper.adjustSimpleTableColors(filmTable);
         filmPane.add(new JScrollPane(filmTable), BorderLayout.CENTER);
 
         var filmInfoPane = new JPanel(new BorderLayout());

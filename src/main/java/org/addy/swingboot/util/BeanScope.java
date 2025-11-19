@@ -1,4 +1,4 @@
-package org.addy.swingboot;
+package org.addy.swingboot.util;
 
 import lombok.experimental.UtilityClass;
 
@@ -10,5 +10,4 @@ public class BeanScope {
     public final String SESSION =  "session";
     public final String APPLICATION =  "application";
     public final String WEBSOCKET =  "websocket";
-
 }
