@@ -63,7 +63,7 @@ public class MainWindow extends JFrame {
     @PostConstruct
     private void initialize() {
         initModels();
-        initUI();
+        createWidgets();
         loadData();
     }
 
@@ -76,7 +76,7 @@ public class MainWindow extends JFrame {
         actorListModel = new SimpleComboBoxModel<>();
     }
 
-    private void initUI() {
+    private void createWidgets() {
         var contentPane = new JPanel(new BorderLayout());
 
         var categoryPane = widgetFactory.createFramePanel("Categories");
