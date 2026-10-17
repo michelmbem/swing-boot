@@ -70,8 +70,8 @@ public class MainWindow extends JFrame {
     private void initModels() {
         categoryListModel = new SimpleComboBoxModel<>();
 
-        filmTableModel = new SimpleTableModel(Film.class,
-                "title", "releaseYear", "language", "length", "replacementCost", "rating", "specialFeatures");
+        filmTableModel = new SimpleTableModel(Film.class, "title", "releaseYear",
+                "language", "length", "replacementCost", "rating", "specialFeatures");
         filmTableModel.setEditable(false);
 
         actorListModel = new SimpleComboBoxModel<>();
