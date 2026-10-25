@@ -141,7 +141,7 @@ public class MainWindow extends JFrame {
         setContentPane(contentPane);
         setSize(1000, 700);
         setTitle("Spring-Boot and Swing Demo");
-        setIconImage(loadIcon(getClass().getClassLoader(), "spring-boot-logo.png", 0, 0).getImage());
+        setIconImage(loadIcon(getClass(), "/spring-boot-logo.png", 0, 0).getImage());
         setLocationRelativeTo(null);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
     }
